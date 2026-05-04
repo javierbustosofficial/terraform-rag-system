@@ -21,4 +21,10 @@ This section will cover the ingestion pipeline of this RAG system. We will go th
 
 The document loader [`loader.py`](./src/terraform_rag/ingestion/loader.py) will be used to split the docs content and metadata and prepare them for chunking. Since HashiCorps documentation is already written in markdown, no cleanup will be needed at this time. The only concern are the occasional .jsx tags, but that will be addressed if there is a noticeable issue with quality with responses. 
 
+## Chunking Strategy
 
+I will be implementing a pre-chunking method, which processes documents asynchronously before embedding and storing them in a vector database. Here are a couple strategies and why I did/didn't pick them:
+
+1. Fixed-Size Chunking - Simple and straightforward. Chunking is done with a pre-defined size, often measured in tokens, characters, or words. Best for prototyping, but probably not for anything beyond that. This strategy does not maintain the semantic structure of text. It can cut off a chunk in the middle of sentences, or even words (with token-based chunking). Even with chunk overlap, a lot of meaning/context can be missing between chunks.
+
+2. Document-Based Chunking - Uses the structure of a document to create chunks i.e headings/subsections in Markdown. I think this approach is best for the type of documentation being used, since each document is neatly structured in this way. 
