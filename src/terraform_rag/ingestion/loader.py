@@ -14,8 +14,10 @@ class Document:
 
 def _derive_section(path: Path, docs_root: Path) -> str:
     relative = path.relative_to(docs_root)
-    top = relative.parts[0]
-    return top if top in SECTION_DIRS else "other"
+    for part in relative.parts:
+        if part in SECTION_DIRS:
+            return part
+    return "other"
 
 
 def load_document(path: Path, docs_root: Path) -> Document:
@@ -24,7 +26,7 @@ def load_document(path: Path, docs_root: Path) -> Document:
     metadata = {
         "page_title":    post.metadata.get("page_title", ""),
         "description":   post.metadata.get("description", ""),
-        "last_modified": post.metadata.get("last_modified", ""),
+        "last_modified": str(post.metadata.get("last_modified", "")),
         "section":       _derive_section(path, docs_root),
         "source_path":   str(path.relative_to(docs_root)),
         "chunk_index":   0,

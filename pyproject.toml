@@ -8,3 +8,6 @@ dependencies = [
     "chromadb",
     "python-dotenv",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
