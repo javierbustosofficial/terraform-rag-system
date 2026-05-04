@@ -54,3 +54,4 @@ build/
 
 # Local Vector Store
 data/chroma/*
+!data/chroma/.gitkeep
