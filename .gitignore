@@ -51,3 +51,6 @@ build/
 
 # Environment secrets
 .env
+
+# Local Vector Store
+.data/chroma/
