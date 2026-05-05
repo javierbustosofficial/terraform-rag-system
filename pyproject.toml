@@ -7,7 +7,13 @@ dependencies = [
     "openai>=1.0",
     "chromadb",
     "python-dotenv",
+    "sentence-transformers",
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

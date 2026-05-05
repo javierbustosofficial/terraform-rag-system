@@ -40,3 +40,47 @@ The ChromaDB instance will be enough to get a working prototype going for this i
 ### Putting It All Together
 [`build_index.py`](./scripts/build_index.py) will be where we put all of our functions together to create the end-to-end ingestion pipeline, from document loading, to chunking, vector embedding, and storage in a vector database. The data will live in `./data/chroma`.
 
+## Retrieval Pipeline
+
+Now I will be shifting my focus to the retrieval portion of this RAG system, focusing on the most applicable search method, query rewritting, and other aspects discussed below
+
+```
+User query
+    │
+    ▼
+[1] LLM Query Rewriting  (gpt-4o-mini)
+    │  
+    "how do I init terraform?" → "How to initialize a Terraform working directory using terraform init"
+    │  
+    ▼
+[2] Embed rewritten query  (text-embedding-3-small)
+    │
+    ▼
+[3] ChromaDB vector search  → top-30 candidates
+    │
+    ▼
+[4] Hybrid keyword re-score  → keep top-15  (semantic 0.7 + keyword 0.3)
+    │
+    ▼
+[5] Cross-encoder re-rank  → final top-k  (sentence-transformers)
+    │
+    ▼
+List[dict]  {text, metadata, score}
+```
+
+Steps 3-4 serve as a cheap "pre-filter" so that the cross-encoder (which is the slowest step) only has to process 15 documents instead of 30. 
+
+### Search Method
+
+I will be implementing both keyword search (in the form of BM25) along with semantic search
+
+### Query Rewriting
+An LLM will rewrite the raw user query into a retrieval-optimised query before embedding, improving vector search for casually-worded searches.
+
+It will use `gpt-4o-mini`, cheap and fast - great for our use case. 
+
+
+### Reranking  
+The cross-encoder model will be `ms-marco-MiniLM-L-6-v2`, a lightweight ~22M parameter model designed for semantic search reranking.
+
+With the implementation of reranking, we can configure the retriver to overfetch documents during the initial retrieval.

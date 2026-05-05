@@ -25,9 +25,12 @@ def upsert_chunks(
         metadatas=metadatas,
     )
 
-def query(embedding: List[float], n_results: int = 5) -> dict:
-    return _get_collection().query(
+def query(embedding: List[float], n_results: int = 5, where: dict | None = None) -> dict:
+    kwargs = dict(
         query_embeddings=[embedding],
         n_results=n_results,
         include=["documents", "metadatas", "distances"],
     )
+    if where:
+        kwargs["where"] = where
+    return _get_collection().query(**kwargs)
